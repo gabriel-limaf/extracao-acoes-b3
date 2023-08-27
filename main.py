@@ -13,6 +13,7 @@ def download_file(url, destination):
         print("Download concluído.")
     else:
         print("Falha no download. Código de status:", response.status_code)
+        exit()
 
 
 def unzip(path):
