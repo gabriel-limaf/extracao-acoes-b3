@@ -4,7 +4,7 @@ import datetime
 import csv
 
 
-def download_file(url, destination):
+def download_file(url, destination, csv_vazio):
     response = requests.get(url, stream=True)
     if response.status_code == 200:
         with open(destination, 'wb') as file:
@@ -12,7 +12,15 @@ def download_file(url, destination):
                 file.write(chunk)
         print("Download concluído.")
     else:
-        print("Falha no download. Código de status:", response.status_code)
+        print('Falha no download. Código de status:', response.status_code)
+        print('Encerrando operação...')
+        with open(csv_vazio, "w", newline="", encoding="utf-8") as arquivo_csv:
+            escritor_csv = csv.writer(arquivo_csv, delimiter=";")
+
+            # Escrever o cabeçalho
+            cabecalho = ['data_pregao', 'codigo_bdi', 'ticker', 'preco_abertura', 'preco_maximo', 'preco_minimo',
+                         'preco_medio', 'preco_fechamento', 'qnt_negociada', 'vol_negociado']
+            escritor_csv.writerow(cabecalho)
         exit()
 
 
@@ -25,7 +33,7 @@ def unzip(path):
         print('Concluido!')
 
 
-def ler_arquivo(arq, arq_csv, tickers_lista):
+def gerar_arquivo(arq, arq_csv, tickers_lista):
     linhas_csv = []
     with open(arq, "r", encoding='utf-8') as arquivo:
         # Lê cada linha do arquivo
@@ -43,7 +51,7 @@ def ler_arquivo(arq, arq_csv, tickers_lista):
                 preco_medio = (linha[95:106] + ',' + linha[106:108]).lstrip('0')
                 preco_fechamento = (linha[108:119] + ',' + linha[119:121]).lstrip('0')
                 qnt_negociada = linha[152:170].strip().lstrip('0')
-                vol_negociado = linha[170:188].strip().lstrip('0')
+                vol_negociado = (linha[170:186] + ',' + linha[186:188]).lstrip('0')
                 linhas_csv.append([data_pregao, codigo_bdi, ticker, preco_abertura, preco_maximo, preco_minimo,
                                    preco_medio, preco_fechamento, qnt_negociada, vol_negociado])
     # Salvar o arquivo
@@ -94,6 +102,6 @@ csv_path = f'COTAHIST_D{data_consulta}.csv'
 # txt_path = f'COTAHIST_A2022.TXT'
 # csv_path = f'COTAHIST_A2022.csv'
 
-download_file(file_url, save_path)
+download_file(file_url, save_path, csv_path)
 unzip(save_path)
-ler_arquivo(txt_path, csv_path, listar_tickers(tickers_path))
+gerar_arquivo(txt_path, csv_path, listar_tickers(tickers_path))
