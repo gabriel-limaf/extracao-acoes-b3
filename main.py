@@ -42,7 +42,6 @@ def gerar_arquivo(arq, arq_csv, tickers_lista):
             linha = linha.strip()
             # Ações linha a linha
             if linha[12:24].strip() in tickers_lista:
-                # data_pregao = linha[2:10].strip()
                 data_pregao = datetime.strptime(linha[2:10], "%Y%m%d").date()
                 codigo_bdi = linha[10:12].strip()  # pegar regra do bdi para colocar em condicional
                 ticker = linha[12:24].strip()
