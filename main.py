@@ -1,6 +1,6 @@
 import requests
 from zipfile import ZipFile
-import datetime
+from datetime import datetime
 import csv
 
 
@@ -42,16 +42,17 @@ def gerar_arquivo(arq, arq_csv, tickers_lista):
             linha = linha.strip()
             # Ações linha a linha
             if linha[12:24].strip() in tickers_lista:
-                data_pregao = linha[2:10].strip()
+                # data_pregao = linha[2:10].strip()
+                data_pregao = datetime.strptime(linha[2:10], "%Y%m%d").date()
                 codigo_bdi = linha[10:12].strip()  # pegar regra do bdi para colocar em condicional
                 ticker = linha[12:24].strip()
-                preco_abertura = (linha[56:67] + ',' + linha[67:69]).lstrip('0')
-                preco_maximo = (linha[69:80] + ',' + linha[80:82]).lstrip('0')
-                preco_minimo = (linha[82:93] + ',' + linha[93:95]).lstrip('0')
-                preco_medio = (linha[95:106] + ',' + linha[106:108]).lstrip('0')
-                preco_fechamento = (linha[108:119] + ',' + linha[119:121]).lstrip('0')
-                qnt_negociada = linha[152:170].strip().lstrip('0')
-                vol_negociado = (linha[170:186] + ',' + linha[186:188]).lstrip('0')
+                preco_abertura = "{:.2f}".format(int(linha[56:69])/100)
+                preco_maximo = "{:.2f}".format(int(linha[69:82])/100)
+                preco_minimo = "{:.2f}".format(int(linha[82:95])/100)
+                preco_medio = "{:.2f}".format(int(linha[95:108])/100)
+                preco_fechamento = "{:.2f}".format(int(linha[108:121])/100)
+                qnt_negociada = int(linha[152:170])
+                vol_negociado = "{:.2f}".format(int(linha[170:188])/100)
                 linhas_csv.append([data_pregao, codigo_bdi, ticker, preco_abertura, preco_maximo, preco_minimo,
                                    preco_medio, preco_fechamento, qnt_negociada, vol_negociado])
     # Salvar o arquivo
@@ -77,7 +78,7 @@ def listar_tickers(tickers):
     return tickers_lista
 
 
-data_atual = datetime.datetime.now()
+data_atual = datetime.now()
 ano = str(data_atual.year)
 mes = str(data_atual.month).zfill(2)
 dia = str(data_atual.day - 1).zfill(2)
