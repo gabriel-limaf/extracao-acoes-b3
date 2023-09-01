@@ -1,6 +1,6 @@
 import requests
 from zipfile import ZipFile
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 
 
@@ -77,11 +77,8 @@ def listar_tickers(tickers):
     return tickers_lista
 
 
-data_atual = datetime.now()
-ano = str(data_atual.year)
-mes = str(data_atual.month).zfill(2)
-dia = str(data_atual.day - 1).zfill(2)
-data_consulta = dia + mes + ano
+yesterday = datetime.now() - timedelta(days=1)
+data_consulta = yesterday.strftime('%d'.zfill(2) + '%m'.zfill(2) + '%Y')
 
 # URL do arquivo para fazer download
 file_url = f'https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_D{data_consulta}.ZIP'
